@@ -36,9 +36,36 @@ mode(succ(g,_)).
 mode(succ(_,g)).
 
 
-:- dynamic delay/1.
-% TODO documentation
-% TODO describe length/2 and univ/3 since they're different from the rest
+%%	delay(:Goal)
+%
+%   Like `call(Goal)` but postpones execution until Goal's arguments are
+%   bound enough to avoid errors like: "Arguments are not sufficiently
+%   instantiated". This is currently realized with attributed
+%   variables and when/2, so execution timing is identical. For example,
+%
+%       t :-
+%           delay(atom_codes(A,C)),
+%           A = hello,
+%           C == "hello".
+%
+%   does not throw an exception on the first line.
+%   One is simply declaring that `A` and `C` have a given relationship
+%   without stating when the predicate (atom_codes/2) will
+%   execute. This declarative style is especially valuable when
+%   different modes of a predicate require different goal order.
+%
+%   `delay(length(L,Len))` warrants additional explanation. length/2
+%   doesn't throw instantiation exceptions. It simply iterates all
+%   possible lists and their respective lengths. This isn't always
+%   ideal. Using delay/1 with length/2 yields the same semantics but
+%   performs much less backtracking.  It waits until either `L`
+%   or `Len` is bound then length/2 evaluates without any choicepoints.
+%   `L` must become a proper list to trigger, so incrementally binding
+%   its head is OK.
+%
+%   `delay(univ(Term,Name,Args))` is like =../2 but it works when all
+%   arguments are variables.
+:- dynamic delay/1.  % let macro expansion add predicates
 delay(length(L,Len)) :-
     var(L),
     var(Len),
