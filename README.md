@@ -2,10 +2,21 @@
 
     :- use_module(library(delay)).
     main :-
-        % give one motivating example
-        true.
+        % describe a relationship between variables.
+        % none of them need values yet.
+        delay(atom_codes(Atom,Codes)),
+        
+        % now we can bind a value...
+        Codes = "hello",
+        
+        % and the other one receives a value too
+        Atom == hello.
 
 # Description
+
+# Changes in this Version
+
+  * Initial public release
 
 # Installation
 
