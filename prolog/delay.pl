@@ -1,6 +1,7 @@
-:- module(delay, [ delay/1 ]).
+:- module(delay, [ delay/1
+                 , when_proper_list/2
+                 ]).
 
-:- dynamic delay/1.
 :- dynamic mode/2.
 
 % convert pleasant mode/1 facts into usable mode/2 facts
@@ -35,9 +36,52 @@ mode(succ(g,_)).
 mode(succ(_,g)).
 
 
-% TODO
-% delay(length(List,Len)) :- ...
-% delay(univ(Term,Name,Args)) :- ...
+:- dynamic delay/1.
+% TODO documentation
+% TODO describe length/2 and univ/3 since they're different from the rest
+delay(length(L,Len)) :-
+    var(L),
+    var(Len),
+    !,
+    when( (nonvar(Len) ; nonvar(L)), delay(length(L,Len)) ).
+delay(length(L,Len)) :-
+    nonvar(Len),
+    !,
+    length(L,Len).
+delay(length(L,Len)) :-
+    % nonvar(L)
+    !,  % cut choicepoints in clauses created by macro expansion
+    when_proper_list(L, length(L,Len)).
+
+delay(univ(Term, Name, Args)) :-
+    var(Term),
+    ( var(Name) ; var(Args) ),
+    !,
+    when( ( nonvar(Term)
+          ; nonvar(Name), nonvar(Args)
+          )
+        , delay(univ(Term,Name,Args))
+        ).
+delay(univ(Term, Name, Args)) :-
+    nonvar(Term),
+    !,
+    Term =.. [Name|Args].
+delay(univ(Term,Name,Args)) :-
+    % nonvar(Name),
+    % nonvar(Args),
+    !,  % cut choicepoints in clauses created by macro expansion
+    when_proper_list(Args, Term=..[Name|Args]).
+
+
+% TODO documentation
+when_proper_list(List, Goal) :-
+    var(List),
+    !,
+    when(nonvar(List), when_proper_list(List, Goal)).
+when_proper_list([], Goal) :-
+    call(Goal).
+when_proper_list([_|T], Goal) :-
+    when_proper_list(T, Goal).
 
 
 % convert a mode letter and argument variable into a when/2 condition
