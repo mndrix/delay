@@ -1,8 +1,8 @@
 :- module(delay, [ delay/1
                  , when_proper_list/2
                  ]).
+:- use_module(library(when), [when/2]).
 
-:- dynamic mode/2.
 
 % convert pleasant mode/1 facts into usable mode/2 facts
 % from which code can generate delay/1 clauses.
@@ -10,9 +10,11 @@ term_expansion(mode(Head0), mode(Name/Arity, Modes)) :-
     functor(Head0, Name, Arity),
     Head0 =.. [Name|Modes].
 
+
 % define acceptable modes for each predicate.
 % 'g' means argument must be ground.
 % 'n' means argument must be nonvar.
+:- dynamic mode/2.
 mode(atom_codes(g, _)).
 mode(atom_codes(_, g)).
 
