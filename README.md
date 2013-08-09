@@ -58,7 +58,7 @@ and now we get what we wanted
 
 # Changes in this Version
 
-  * Initial public release
+  * Add a list of supported predicates
 
 # Installation
 
