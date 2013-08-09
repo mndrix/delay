@@ -56,6 +56,18 @@ mode(succ(_,g)).
 %   execute. This declarative style is especially valuable when
 %   different modes of a predicate require different goal order.
 %
+%   The following predicates are currently supported:
+%
+%     * atom_codes/2
+%     * functor/3
+%     * length/2
+%     * number_codes/2
+%     * phrase/2
+%     * phrase/3
+%     * plus/3
+%     * succ/2
+%     * univ/3
+%
 %   `delay(length(L,Len))` warrants additional explanation. length/2
 %   doesn't throw instantiation exceptions. It simply iterates all
 %   possible lists and their respective lengths. This isn't always
