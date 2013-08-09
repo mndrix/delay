@@ -102,7 +102,11 @@ delay(univ(Term,Name,Args)) :-
     when_proper_list(Args, Term=..[Name|Args]).
 
 
-% TODO documentation
+%%	when_proper_list(List, Goal)
+%
+%   Delay executing Goal until List becomes a proper list. This
+%   predicate is part of the internal implementation of delay/1 but it
+%   may be useful to others so it's exported.
 when_proper_list(List, Goal) :-
     var(List),
     !,
