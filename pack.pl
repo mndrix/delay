@@ -1,6 +1,6 @@
 name(delay).
 version('0.0.1').
-title('').
+title('Avoid instantiation errors for built-in predicates').
 author('Michael Hendricks','michael@ndrix.org').
 packager('Michael Hendricks','michael@ndrix.org').
 maintainer('Michael Hendricks','michael@ndrix.org').
