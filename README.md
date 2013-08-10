@@ -66,8 +66,15 @@ Using SWI-Prolog 6.3 or later:
 
     ?- pack_install(delay).
 
-Source code available and pull requests accepted at
-http://github.com/mndrix/delay
+# Contributing
+
+Source code is available at http://github.com/mndrix/delay
+
+To add support for additional built-in predicates, add clauses to the
+mode/1 predicate in `prolog/delay.pl`.  There should be one clause
+for each mode in which the built-in can operate. Submit your changes
+as a pull request.
+
 
 @author Michael Hendricks <michael@ndrix.org>
 @license BSD
