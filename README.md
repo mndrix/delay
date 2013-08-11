@@ -66,6 +66,8 @@ Using SWI-Prolog 6.3 or later:
 
     ?- pack_install(delay).
 
+This module uses [semantic versioning](http://semver.org/).
+
 # Contributing
 
 Source code is available at http://github.com/mndrix/delay
