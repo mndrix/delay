@@ -3,36 +3,6 @@
                  ]).
 :- use_module(library(when), [when/2]).
 
-% TODO strip all macros from this code. i must work with mode/1 as it's
-% written
-%
-% TODO replace 'g' and 'n' with 'ground' and 'nonvar', respectively
-%
-% TODO make sure that each delay/1 clause cuts before calling when/2.
-% otherwise, when/2 can fail because all arguments are ground and the
-% underlying goal fails. that would backtrack to the final delay/1
-% clause and throw an exception. Be sure to write a failing test for
-% this first, then make changes to make it pass. without a test, I'm
-% sure I'll encounter this same corner case again.
-%
-% TODO have delay/1 consult mode/1 to build a when/2 goal then assert it
-% as an additional clause on delay/1 (the assertion is an optimization)
-%
-% TODO change delay/1 into `meta_predicate delay(0)` and change mode/1
-% so that each built-in predicate is prefaced with `system:`. Look
-% at mode/1 with the module-qualified head. If there's no mode for
-% that, call `predicate_property(Head, imported_from(Module))` to
-% determine if this predicate is originally from another module.
-% Perform the mode/1 look up using that module. If there's no mode/1
-% declaration in either case, throw an error with instructions about how
-% to add support for other predicates.
-%
-% TODO :- multifile delay/1.
-%
-% TODO at this point, one can just add `delay:mode(foo:bar(ground,_))`
-% facts to support additional predicates.
-
-
 % convert pleasant mode/1 facts into usable mode/2 facts
 % from which code can generate delay/1 clauses.
 term_expansion(mode(Head0), mode(Name/Arity, Modes)) :-
