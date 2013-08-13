@@ -4,29 +4,27 @@
 :- use_module(library(when), [when/2]).
 
 % define acceptable modes for each predicate.
-% 'g' means argument must be ground.
-% 'n' means argument must be nonvar.
-mode(atom_codes(g, _)).
-mode(atom_codes(_, g)).
+mode(atom_codes(ground, _)).
+mode(atom_codes(_, ground)).
 
-mode(functor(n,_,_)).
-mode(functor(_,g,g)).
+mode(functor(nonvar,_,_)).
+mode(functor(_,ground,ground)).
 
-mode(number_codes(g,_)).
-mode(number_codes(_,g)).
+mode(number_codes(ground,_)).
+mode(number_codes(_,ground)).
 
-mode(phrase(g,_)).
-mode(phrase(_,g)).
+mode(phrase(ground,_)).
+mode(phrase(_,ground)).
 
-mode(phrase(g,_,_)).
-mode(phrase(_,g,_)).
+mode(phrase(ground,_,_)).
+mode(phrase(_,ground,_)).
 
-mode(plus(g,g,_)).
-mode(plus(g,_,g)).
-mode(plus(_,g,g)).
+mode(plus(ground,ground,_)).
+mode(plus(ground,_,ground)).
+mode(plus(_,ground,ground)).
 
-mode(succ(g,_)).
-mode(succ(_,g)).
+mode(succ(ground,_)).
+mode(succ(_,ground)).
 
 
 %%	delay(:Goal)
@@ -147,8 +145,8 @@ make_condition(X, _, _) :-
     var(X),
     !,
     fail.
-make_condition(g, X, ground(X)).
-make_condition(n, X, nonvar(X)).
+make_condition(ground, X, ground(X)).
+make_condition(nonvar, X, nonvar(X)).
 
 
 %%	when_proper_list(List, Goal)
