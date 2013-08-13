@@ -121,8 +121,8 @@ delay(Goal) :-
     % assert the new delay/1 clause, then call it
     asserta((
         delay(Head) :-
-            when(Condition, Head),
-            !
+            !,
+            when(Condition, Head)
     )),
     delay(Goal).
 delay(_Goal) :-
