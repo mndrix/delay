@@ -56,6 +56,38 @@ and now we get what we wanted
     Whom = john ;
     false.
 
+# Supporting Additional Predicates
+
+`library(delay)` comes with support for some built-in predicates.  To
+add support other predicates, define clauses for the multifile
+predicate `delay:mode/1`.
+
+For example, if the module `utils` exports `helpful/2` and that
+predicate requires at least one of its arguments to be ground, you can
+add delay support with
+
+    :- multifile delay:mode/1.
+    delay:mode(utils:helpful(ground,_)).
+    delay:mode(utils:helpful(_,ground)).
+
+`library(delay)` first looks for mode information under the calling
+module's name.  If none is found, it looks for it under the exporting
+module's name.  The example above defines mode information for all
+users of `utils:helpful/2`.  If your module `mine` imports `helpful/2`
+and you only want the mode declarations to have effect locally, you
+can do this instead:
+
+    :- multifile delay:mode/1.
+    delay:mode(mine:helpful(ground,_)).
+    delay:mode(mine:helpful(_,ground)).
+
+Don't worry about adding `mode/1` declarations for predicates that
+already have them.  Redundant mode declarations are ignored.
+
+If you create mode declarations for built-in predicates, please
+consider contributing them as a pull request to this library (see
+below).  That way, other users can benefit too.
+
 # Changes in this Version
 
   * Add a list of supported predicates
@@ -68,14 +100,7 @@ Using SWI-Prolog 6.3 or later:
 
 This module uses [semantic versioning](http://semver.org/).
 
-# Contributing
-
 Source code is available at http://github.com/mndrix/delay
-
-To add support for additional built-in predicates, add clauses to the
-mode/1 predicate in `prolog/delay.pl`.  There should be one clause
-for each mode in which the built-in can operate. Submit your changes
-as a pull request.
 
 
 @author Michael Hendricks <michael@ndrix.org>

@@ -4,7 +4,7 @@
                  ]).
 :- use_module(library(when), [when/2]).
 
-% define acceptable modes for each predicate.
+:- multifile mode/1.
 mode('$dcg':phrase(nonvar,ground)).
 mode('$dcg':phrase(ground,_)).
 
@@ -105,8 +105,10 @@ delay(Module:Goal) :-
             when(Condition, DelayedGoal)
     )),
     delay(Module:Goal).
-delay(_Goal) :-
-    throw('TODO instructions on making other goals delayable').
+delay(Module:Goal) :-
+    functor(Goal, Name, Arity),
+    format(atom(Msg), '~w:~w/~d not supported. See delay:mode/1', [Module,Name,Arity]),
+    throw(Msg).
 
 
 % like this:
