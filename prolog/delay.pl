@@ -133,8 +133,6 @@ goal_to_conditions(Module:Goal, Head, SimpleConditions, ComplexConditions) :-
     partition_modes(Modes, HeadArgs, SimpleConditions, ComplexConditions).
 
 
-% separates a list of modes into those without a 'list' mode and those
-% with
 partition_modes([], _, [], []).
 partition_modes([Mode|Modes], HeadArgs, [SimpleH|SimpleT], [ComplexH|ComplexT]) :-
     Mode =.. [_|ModeArgs],
@@ -142,7 +140,7 @@ partition_modes([Mode|Modes], HeadArgs, [SimpleH|SimpleT], [ComplexH|ComplexT]) 
     partition_modes(Modes, HeadArgs, SimpleT, ComplexT).
 
 
-% convert a mode name and argument variable into a when/2 condition
+% convert a mode name and argument variable into when/2 conditions
 make_condition(X, _, _, _) :-
     var(X),
     !,
@@ -152,6 +150,7 @@ make_condition(nonvar, X, nonvar(X), nonvar(X)).
 make_condition(list, X, nonvar(X), list(X)).
 
 
+% create an additional clause for delay_followup/1
 assert_followup_clause(Module:Head, ComplexConditions) :-
     exclude(is_list_mode, ComplexConditions, GuardConditions),
     include(is_list_mode, ComplexConditions, ListConditions),
@@ -173,6 +172,7 @@ assert_followup_clause(Module:Head, ComplexConditions) :-
     )).
 
 
+% true if the given mode represents 'list'
 is_list_mode(list(_)).
 
 
@@ -191,6 +191,8 @@ when_proper_list([_|T], Goal) :-
     when_proper_list(T, Goal).
 
 
+% like maplist but skips elements for which Goal fails.
+% it's like the love child of maplist and exclude.
 :- meta_predicate map_include(4, +, +, -, -).
 :- meta_predicate map_include_(+,+,4,-,-).
 map_include(F, La, Lb, Lc, Ld) :-
@@ -207,7 +209,7 @@ map_include_([Ha|Ta], [Hb|Tb], F, Lc0, Ld0) :-
     map_include_(Ta, Tb, F, Lc, Ld).
 
 
-% originall copied from library(list_util).
+% originally copied from library(list_util).
 % I don't want this pack to depend on external libraries.
 xfy_list(Op, Term, [Left|List]) :-
     Term =.. [Op, Left, Right],
