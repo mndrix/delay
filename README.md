@@ -88,6 +88,16 @@ If you create mode declarations for built-in predicates, please
 consider contributing them as a pull request to this library (see
 below).  That way, other users can benefit too.
 
+# Caution with Cuts
+
+When using `delay/1`, be certain to think carefully about all
+surrounding cuts.  Delaying over a cut changes the semantics.
+
+This library might someday offer development-time warnings to bring
+these to your attention. However, such a tool doesn't now exist and is
+unlikely to discover all circumstances in which delay and cut interact
+unexpectedly.
+
 # Changes in this Version
 
   * Add a list of supported predicates
