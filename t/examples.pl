@@ -43,3 +43,12 @@
     var(Term),  % not enough info to instantiate yet
     Args = [b,c,d],
     Term == a(b,c,d).
+
+'univ backwards: piecewise arguments' :-
+    delay(univ(Term, Name, Args)),
+    Name = a,
+    var(Term),  % not enough info to instantiate yet
+    Args = [b|Tail],
+    var(Term),  % still not enough info
+    Tail = [c,d],
+    Term == a(b,c,d).

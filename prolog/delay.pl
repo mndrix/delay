@@ -1,30 +1,48 @@
 :- module(delay, [ delay/1
+                 , univ/3
                  , when_proper_list/2
                  ]).
 :- use_module(library(when), [when/2]).
 
 % define acceptable modes for each predicate.
-mode(atom_codes(ground, _)).
-mode(atom_codes(_, ground)).
+mode('$dcg':phrase(nonvar,ground)).
+mode('$dcg':phrase(ground,_)).
 
-mode(functor(nonvar,_,_)).
-mode(functor(_,ground,ground)).
+mode('$dcg':phrase(nonvar,ground,_)).
+mode('$dcg':phrase(ground,_,_)).
 
-mode(number_codes(ground,_)).
-mode(number_codes(_,ground)).
+mode(delay:univ(nonvar,_,_)).
+mode(delay:univ(_,ground,list)).
 
-mode(phrase(ground,_)).
-mode(phrase(_,ground)).
+mode(system:atom_codes(ground, _)).
+mode(system:atom_codes(_, ground)).
 
-mode(phrase(ground,_,_)).
-mode(phrase(_,ground,_)).
+mode(system:functor(nonvar,_,_)).
+mode(system:functor(_,ground,ground)).
 
-mode(plus(ground,ground,_)).
-mode(plus(ground,_,ground)).
-mode(plus(_,ground,ground)).
+mode(system:length(_,ground)).
+mode(system:length(list,_)).
 
-mode(succ(ground,_)).
-mode(succ(_,ground)).
+mode(system:number_codes(ground,_)).
+mode(system:number_codes(_,ground)).
+
+mode(system:plus(ground,ground,_)).
+mode(system:plus(ground,_,ground)).
+mode(system:plus(_,ground,ground)).
+
+mode(system:succ(ground,_)).
+mode(system:succ(_,ground)).
+
+
+%%	univ(+Term, -Name, -Args) is det.
+%%	univ(-Term, +Name, +Args) is det.
+%
+%   Just like is like `Term =.. [Name|Args]`. This predicate is exported
+%   to placate the cross-referencer. It's intended
+%   to be called as `delay(univ(T,N,As))`. Although it can be used as a
+%   normal goal, if wanted.
+univ(Term, Name, Args) :-
+    Term =.. [Name|Args].
 
 
 %%	delay(:Goal)
@@ -65,88 +83,97 @@ mode(succ(_,ground)).
 %   or `Len` is bound then length/2 evaluates without any choicepoints.
 %   `L` must become a proper list to trigger, so incrementally binding
 %   its head is OK.
-%
-%   `delay(univ(Term,Name,Args))` is like =../2 but it works when all
-%   arguments are variables.
-:- dynamic delay/1.
-delay(length(L,Len)) :-
-    var(L),
-    var(Len),
-    !,
-    when( (nonvar(Len) ; nonvar(L)), delay(length(L,Len)) ).
-delay(length(L,Len)) :-
-    nonvar(Len),
-    !,
-    length(L,Len).
-delay(length(L,Len)) :-
-    % nonvar(L)
-    !,  % cut choicepoints in clauses created by macro expansion
-    when_proper_list(L, length(L,Len)).
-
-delay(univ(Term, Name, Args)) :-
-    var(Term),
-    ( var(Name) ; var(Args) ),
-    !,
-    when( ( nonvar(Term)
-          ; nonvar(Name), nonvar(Args)
-          )
-        , delay(univ(Term,Name,Args))
-        ).
-delay(univ(Term, Name, Args)) :-
-    nonvar(Term),
-    !,
-    Term =.. [Name|Args].
-delay(univ(Term,Name,Args)) :-
-    % nonvar(Name),
-    % nonvar(Args),
-    !,  % cut choicepoints in clauses created by macro expansion
-    when_proper_list(Args, Term=..[Name|Args]).
-
-delay(Goal) :-
+:- dynamic delay/1, delay_followup/1.
+:- meta_predicate delay(0).
+delay(Module:Goal) :-
     % build a delay/1 clause to support Goal
 
-    % generalize Goal into a clause Head
-    functor(Goal, Name, Arity),
-    functor(Head, Name, Arity),
-    Head =.. [_|Args],
-
-    % find all modes applicable to Head
-    setof(Head, mode(Head), Modes),
+    goal_to_conditions(Module:Goal, Head, SimpleConditions, ComplexConditions),
     !,
+    ( SimpleConditions==ComplexConditions ->
+        DelayedGoal = Module:Head
+    ; % otherwise ->
+        DelayedGoal = delay_followup(Module:Head),
+        maplist(assert_followup_clause(Module:Head), ComplexConditions)
+    ),
 
-    % convert Modes into a condition term that when/2 can use
-    maplist(mode_to_condition(Args), Modes, Conditions),
-    xfy_list(';', Condition, Conditions),
-
-    % assert the new delay/1 clause, then call it
+    maplist(xfy_list(','), Simples, SimpleConditions),
+    xfy_list(';', Condition, Simples),
     asserta((
-        delay(Head) :-
+        delay(Module:Head) :-
             !,
-            when(Condition, Head)
+            when(Condition, DelayedGoal)
     )),
-    delay(Goal).
+    delay(Module:Goal).
 delay(_Goal) :-
     throw('TODO instructions on making other goals delayable').
 
 
-%%	mode_to_condition(+List, +Term, -WhenCondition)
-%
-%	Defines a relationship like this:
-%
-%	    mode_to_condition([X,Y], atom_codes(ground,_), ground(X))
-mode_to_condition(HeadArgs, Mode, Condition) :-
+% like this:
+% goal_to_conditions(
+%     length(L,Len),
+%     length(X,Y),
+%     [[nonvar(X)],[ground(Y)]],
+%     [[list(X)],[ground(Y)]]
+% )
+goal_to_conditions(Module:Goal, Head, SimpleConditions, ComplexConditions) :-
+    functor(Goal, Name, Arity),
+    functor(Head, Name, Arity),
+    Head =.. [Name|HeadArgs],
+
+    % find all modes for this goal
+    ( setof(Head, mode(Module:Head), Modes) ->
+        true
+    ; predicate_property(Module:Head, imported_from(Origin)) ->
+        setof(Head, mode(Origin:Head), Modes)
+    ),
+
+    partition_modes(Modes, HeadArgs, SimpleConditions, ComplexConditions).
+
+
+% separates a list of modes into those without a 'list' mode and those
+% with
+partition_modes([], _, [], []).
+partition_modes([Mode|Modes], HeadArgs, [SimpleH|SimpleT], [ComplexH|ComplexT]) :-
     Mode =.. [_|ModeArgs],
-    map_include(make_condition, ModeArgs, HeadArgs, Whens),
-    xfy_list(',', Condition, Whens).
+    map_include(make_condition, ModeArgs, HeadArgs, SimpleH, ComplexH),
+    partition_modes(Modes, HeadArgs, SimpleT, ComplexT).
 
 
-% convert a mode letter and argument variable into a when/2 condition
-make_condition(X, _, _) :-
+% convert a mode name and argument variable into a when/2 condition
+make_condition(X, _, _, _) :-
     var(X),
     !,
     fail.
-make_condition(ground, X, ground(X)).
-make_condition(nonvar, X, nonvar(X)).
+make_condition(ground, X, ground(X), ground(X)).
+make_condition(nonvar, X, nonvar(X), nonvar(X)).
+make_condition(list, X, nonvar(X), list(X)).
+
+
+assert_followup_clause(Module:Head, ComplexConditions) :-
+    exclude(is_list_mode, ComplexConditions, GuardConditions),
+    include(is_list_mode, ComplexConditions, ListConditions),
+    ( ListConditions=[] ->
+        Goal = Module:Head
+    ; ListConditions=[list(List)] ->
+        Goal = when_proper_list(List, Module:Head)
+    ; % otherwise ->
+        throw('Predicates with multiple `list` modes are not supported')
+    ),
+    ( GuardConditions=[] ->
+        Guard = true
+    ; % otherwise ->
+        xfy_list(',', Guard, GuardConditions)
+    ),
+    assertz((
+        delay_followup(Module:Head) :-
+            Guard,
+            !,
+            Goal
+    )).
+
+
+is_list_mode(list(_)).
 
 
 %%	when_proper_list(List, Goal)
@@ -164,20 +191,20 @@ when_proper_list([_|T], Goal) :-
     when_proper_list(T, Goal).
 
 
-% originally copied from library(list_util).
-% I don't want this pack to depend on external libraries.
-:- meta_predicate map_include(3, +, +, -).
-:- meta_predicate map_include_(+,+,3,-).
-map_include(F, La, Lb, L) :-
-    map_include_(La, Lb, F, L).
-map_include_([], [], _, []).
-map_include_([Ha|Ta], [Hb|Tb], F, List0) :-
-    ( call(F, Ha, Hb, H) ->
-        List0 = [H|List]
+:- meta_predicate map_include(4, +, +, -, -).
+:- meta_predicate map_include_(+,+,4,-,-).
+map_include(F, La, Lb, Lc, Ld) :-
+    map_include_(La, Lb, F, Lc, Ld).
+map_include_([], [], _, [], []).
+map_include_([Ha|Ta], [Hb|Tb], F, Lc0, Ld0) :-
+    ( call(F, Ha, Hb, Hc, Hd) ->
+        Lc0 = [Hc|Lc],
+        Ld0 = [Hd|Ld]
     ; % otherwise ->
-        List0 = List
+        Lc0 = Lc,
+        Ld0 = Ld
     ),
-    map_include_(Ta, Tb, F, List).
+    map_include_(Ta, Tb, F, Lc, Ld).
 
 
 % originall copied from library(list_util).
