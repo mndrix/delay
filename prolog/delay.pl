@@ -154,17 +154,15 @@ assert_followup_clause(Module:Head, ComplexConditions) :-
     exclude(is_list_mode, ComplexConditions, GuardConditions),
     include(is_list_mode, ComplexConditions, ListConditions),
     ( ListConditions=[] ->
+        xfy_list(',', Guard, GuardConditions),
         Goal = Module:Head
     ; ListConditions=[list(List)] ->
+        xfy_list(',', Guard, [nonvar(List)|GuardConditions]),
         Goal = when_proper_list(List, Module:Head)
     ; % otherwise ->
         throw('Predicates with multiple `list` modes are not supported')
     ),
-    ( GuardConditions=[] ->
-        Guard = true
-    ; % otherwise ->
-        xfy_list(',', Guard, GuardConditions)
-    ),
+
     assertz((
         delay_followup(Module:Head) :-
             Guard,
