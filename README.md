@@ -98,6 +98,22 @@ these to your attention. However, such a tool doesn't now exist and is
 unlikely to discover all circumstances in which delay and cut interact
 unexpectedly.
 
+# See Also
+
+SWI-Prolog's [SICSTUS compatibility
+layer](http://www.swi-prolog.org/pldoc/doc/swi/library/dialect/sicstus.pl)
+includes the `block/1` directive.  That directive fills a niche very similar to `delay/1`.
+
+Here are some advantages of `delay/1` over `block/1`:
+
+  * works with built-in predicates
+  * works with foreign predicates
+  * works with dynamic predicates
+  * more flexible mode language
+
+One disadvantage is that `delay/1` is not compatible with existing SICSTUS
+code.
+
 # Changes in this Version
 
   * Add a list of supported predicates
