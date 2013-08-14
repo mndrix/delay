@@ -116,7 +116,9 @@ code.
 
 # Changes in this Version
 
-  * Add a list of supported predicates
+  * Allow users to define additional, delayable predicates
+  * Fix a bug when calling `delay/1` on an already-instantiated goal
+  * Improved documentation
 
 # Installation
 
