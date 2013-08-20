@@ -181,6 +181,7 @@ is_list_mode(list(_)).
 %   Delay executing Goal until List becomes a proper list. This
 %   predicate is part of the internal implementation of delay/1 but it
 %   may be useful to others so it's exported.
+:- meta_predicate when_proper_list(?,0).
 when_proper_list(List, Goal) :-
     var(List),
     !,
