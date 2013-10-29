@@ -116,9 +116,7 @@ code.
 
 # Changes in this Version
 
-  * Allow users to define additional, delayable predicates
-  * Fix a bug when calling `delay/1` on an already-instantiated goal
-  * Improved documentation
+  * Add meta_predicate declaration for `when_proper_list/2`
 
 # Installation
 
