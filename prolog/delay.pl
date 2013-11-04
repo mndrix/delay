@@ -11,14 +11,23 @@ mode('$dcg':phrase(ground,_)).
 mode('$dcg':phrase(nonvar,ground,_)).
 mode('$dcg':phrase(ground,_,_)).
 
+mode(apply:maplist(nonvar,list,_)).
+mode(apply:maplist(nonvar,_,list)).
+
 mode(delay:univ(nonvar,_,_)).
 mode(delay:univ(_,ground,list)).
+
+mode(system:atom(nonvar)).
 
 mode(system:atom_codes(ground, _)).
 mode(system:atom_codes(_, ground)).
 
 mode(system:functor(nonvar,_,_)).
 mode(system:functor(_,ground,ground)).
+
+mode(system:float(nonvar)).
+
+mode(system:integer(nonvar)).
 
 mode(system:length(_,ground)).
 mode(system:length(list,_)).
