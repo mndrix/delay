@@ -22,6 +22,9 @@ mode(system:atom(nonvar)).
 mode(system:atom_codes(ground, _)).
 mode(system:atom_codes(_, ground)).
 
+mode(system:atomic_list_concat(ground,ground,_)).
+mode(system:atomic_list_concat(_,ground,ground)).
+
 mode(system:functor(nonvar,_,_)).
 mode(system:functor(_,ground,ground)).
 
