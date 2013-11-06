@@ -116,7 +116,12 @@ code.
 
 # Changes in this Version
 
-  * Add meta_predicate declaration for `when_proper_list/2`
+  * Support more predicates
+    * atom/1
+    * atomic_list_concat/3
+    * float/1
+    * integer/1
+    * maplist/3
 
 # Installation
 
