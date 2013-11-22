@@ -8,7 +8,7 @@
 'atom_codes/2 forwards' :-
     delay(atom_codes(A,C)),
     A = foo,
-    C == "foo".
+    C == [0'f, 0'o, 0'o].
 
 'atom_codes/2 backwards' :-
     delay(atom_codes(A,C)),
