@@ -17,6 +17,12 @@ mode(apply:maplist(nonvar,_,list)).
 mode(delay:univ(nonvar,_,_)).
 mode(delay:univ(_,ground,list)).
 
+mode(lists:reverse(list,_)).
+mode(lists:reverse(_,list)).
+
+mode(lists:same_length(list,_)).
+mode(lists:same_length(_,list)).
+
 mode(system:atom(nonvar)).
 
 mode(system:atom_codes(ground, _)).
