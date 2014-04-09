@@ -48,6 +48,9 @@ mode(system:plus(ground,ground,_)).
 mode(system:plus(ground,_,ground)).
 mode(system:plus(_,ground,ground)).
 
+mode(system:string_codes(ground,_)).
+mode(system:string_codes(_,ground)).
+
 mode(system:succ(ground,_)).
 mode(system:succ(_,ground)).
 
