@@ -116,12 +116,7 @@ code.
 
 # Changes in this Version
 
-  * Support more predicates
-    * atom/1
-    * atomic_list_concat/3
-    * float/1
-    * integer/1
-    * maplist/3
+  * Support string_codes/2
 
 # Installation
 
