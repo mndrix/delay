@@ -114,10 +114,6 @@ Here are some advantages of `delay/1` over `block/1`:
 One disadvantage is that `delay/1` is not compatible with existing SICSTUS
 code.
 
-# Changes in this Version
-
-  * Support string_codes/2
-
 # Installation
 
 Using SWI-Prolog 6.3 or later:
