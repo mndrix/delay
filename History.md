@@ -1,3 +1,7 @@
+# v0.3.2 (2014-12-24)
+
+  * Fix botched releases
+
 # v0.3.0 (2014-12-24)
 
   * Support is_dict/1
