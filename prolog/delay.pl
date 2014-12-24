@@ -36,7 +36,14 @@ mode(system:functor(_,ground,ground)).
 
 mode(system:float(nonvar)).
 
+mode(system:dict_pairs(nonvar,_,_)).
+mode(system:dict_pairs(_,_,list)).
+
 mode(system:integer(nonvar)).
+
+mode(system:is_dict(nonvar)).
+
+mode(system:is_dict(nonvar,_)).
 
 mode(system:length(_,ground)).
 mode(system:length(list,_)).
