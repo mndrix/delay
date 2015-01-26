@@ -1,3 +1,7 @@
+# v0.3.3 (2015-01-26)
+
+  * Release served over http (for troubled servers)
+
 # v0.3.2 (2014-12-24)
 
   * Fix botched releases
