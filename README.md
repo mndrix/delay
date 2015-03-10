@@ -124,6 +124,3 @@ This module uses [semantic versioning](http://semver.org/).
 
 Source code is available at http://github.com/mndrix/delay
 
-
-@author Michael Hendricks <michael@ndrix.org>
-@license BSD
